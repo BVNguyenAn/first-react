@@ -54,6 +54,9 @@
 .MuiTabs-root button{
   color: white;
 }
+.MuiBox-root{
+  margin-bottom: 10px;
+}
 .done{
   text-decoration: line-through;
 }

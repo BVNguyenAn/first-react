@@ -1,4 +1,3 @@
-import { useState } from "react";
 import React from "react";
 import './App.css';
 import { Icon } from "@iconify/react";
@@ -6,24 +5,38 @@ import Box from '@mui/material/Box';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 
-function App() {
-  const [job, setjob] = useState('');
-  const [jobs, setjobs] = useState([]);
+const App = () => {
+  const [todos, setTodos] = React.useState([]);
+  const [todo, setTodo] = React.useState("");
+  const [todoEditing, setTodoEditing] = React.useState(null);
+  const [editingText, setEditingText] = React.useState("");
 
-  const handleSubmit = () => {
-    if(job !== ''){
-    setjobs(prev =>{
-      const newJobs = [...prev, job]
-      return newJobs;
-    });
+  function handleSubmit(e) {
+    e.preventDefault();
+
+    const newTodo = {
+      id: new Date().getTime(),
+      text: todo,
+      completed: false,
+      isEditing: false,
+    };
+    setTodos([...todos].concat(newTodo));
+    setTodo("");
   }
-  setjob(''); 
-}
 const [value, setValue] = React.useState(0);
 
 const handleChange = (event, newValue) => {
   setValue(newValue);
 };
+function submitEdits(id) {
+  const update = [...todos].map((todo) => {
+   if(todo.id === id){
+    todo.text = editingText;
+   }
+   return todo
+   setTodos(update);
+  });
+}
   return (
     <div className="App flex flex-col">
       <div className="title">
@@ -31,8 +44,8 @@ const handleChange = (event, newValue) => {
       </div>
       <div className="input-box">
         <input 
-        value={job} 
-        onChange={e => setjob(e.target.value)}
+          onChange={(e) => setTodo(e.target.value)}
+          value={todo}
         placeholder="Task"
         />
         <button onClick={handleSubmit} className="btn">Add</button>
@@ -70,15 +83,18 @@ const handleChange = (event, newValue) => {
         }}/>
       </Tabs>
     </Box>
-          {jobs.map((job, index) => (
-            <li className="work notDone" id={index} key={index}>{job} <span className="unseen d-text" id = {index + '-done'}>[done]</span>
+          {todos.map((todo, index) => (
+            <div id={index}>
+            <li className="work notDone" id= {index + "-work"} key={index}>{todo.text} <span className="unseen d-text" id = {index + '-done'}>[done]</span>
             <button id = {index + '-delete'} onClick={() => {
               const Work = document.getElementById(index);
               Work.remove();
             }}><Icon icon="material-symbols:delete" /></button>
-            <button><Icon icon="uil:edit"/></button>
-            <button><Icon icon="ph:check-duotone" onClick={() => {
-              const Work = document.getElementById(index);
+
+            <button onClick={() => submitEdits(todo.id)}><Icon icon="uil:edit"/></button>
+
+            <button onClick={() => {
+              const Work = document.getElementById(index +'-work');
               if(Work.classList.contains('done')){
                 Work.classList.remove('done');
                 Work.classList.add('notDone');
@@ -91,9 +107,10 @@ const handleChange = (event, newValue) => {
                 const doneText = document.getElementById(index + '-done')
                 console.log(doneText);
                 doneText.classList.remove('unseen')
-              }
-            }}/></button>
+              }}}><Icon icon="ph:check-duotone"/></button>
             </li>
+            <input onChange={(e) => setEditingText(e.target.value) }/> <button onChange={submitEdits(todo.id)}></button>
+            </div>
           ))}
         </ul>
       </div>
