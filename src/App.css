@@ -1,7 +1,7 @@
 .App{
   background-color: #1c1a41;
   color: white;
-  width: 30%;
+  min-width: 30%;
   min-height: 300px;
   border-radius: 10px;
   padding: 30px;
@@ -29,7 +29,7 @@
   height: 40px;
   width: 20%;
   position: relative;
-  top: -1px;
+  text-decoration: none !important;
 }
 .work{
   width: 100%;
@@ -69,4 +69,22 @@
 }
 .d-text{ 
   text-decoration: none !important;
+}
+.input-unseen{
+  display: none;
+}
+@media (max-width: 820px){
+  .App{
+    width: 70%;
+  }
+}
+@media (max-width: 640px) {
+  .App{
+    width: 100%;
+  }
+  .css-1h9z7r5-MuiButtonBase-root-MuiTab-root{
+    font-size: 10px !important;
+    min-width: 1px !important;
+    padding: 5px 10px 5px 10px !important;
+  }
 }

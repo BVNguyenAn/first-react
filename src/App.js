@@ -8,10 +8,10 @@ import Tab from '@mui/material/Tab';
 const App = () => {
   const [todos, setTodos] = React.useState([]);
   const [todo, setTodo] = React.useState("");
-  const [todoEditing, setTodoEditing] = React.useState(null);
   const [editingText, setEditingText] = React.useState("");
 
   function handleSubmit(e) {
+    if(todo !== ''){
     e.preventDefault();
 
     const newTodo = {
@@ -22,20 +22,25 @@ const App = () => {
     };
     setTodos([...todos].concat(newTodo));
     setTodo("");
-  }
+  }}
 const [value, setValue] = React.useState(0);
 
 const handleChange = (event, newValue) => {
   setValue(newValue);
 };
-function submitEdits(id) {
-  const update = [...todos].map((todo) => {
-   if(todo.id === id){
-    todo.text = editingText;
-   }
-   return todo
-   setTodos(update);
+function submitEdits(id, i) {
+  const remove = document.getElementById(i + '-input')
+  remove.classList.add('input-unseen')
+  console.log(remove)
+  const updatedTodos = [...todos].map((todo) => {
+    if (todo.id === id && editingText !== '') {
+      todo.text = editingText;
+      console.log(id)
+    }
+    return todo;
   });
+  setTodos(updatedTodos);
+  setEditingText('');
 }
   return (
     <div className="App flex flex-col">
@@ -60,11 +65,10 @@ function submitEdits(id) {
           }
         }}/>
         <Tab label="Active" onClick={() => {
-                    const divs = document.querySelectorAll('.work-unseen');
-                    for (const div of divs) {
-                      div.classList.remove('work-unseen');
-                    }
-          console.log('open active tabs');
+          const divs = document.querySelectorAll('.work-unseen');
+          for (const div of divs) {
+            div.classList.remove('work-unseen');
+          }
           var items = document.getElementsByClassName('done');
           for(var i = 0; i < items.length; i++){
             items[i].classList.add('work-unseen');
@@ -75,7 +79,6 @@ function submitEdits(id) {
           for (const back of backs) {
             back.classList.remove('work-unseen');
           }
-          console.log('open completed tabs');
           const divs = document.querySelectorAll('.notDone');
           for (const div of divs) {
             div.classList.add('work-unseen');
@@ -84,32 +87,44 @@ function submitEdits(id) {
       </Tabs>
     </Box>
           {todos.map((todo, index) => (
-            <div id={index}>
+            <div className="main" id={index}>
             <li className="work notDone" id= {index + "-work"} key={index}>{todo.text} <span className="unseen d-text" id = {index + '-done'}>[done]</span>
             <button id = {index + '-delete'} onClick={() => {
               const Work = document.getElementById(index);
               Work.remove();
             }}><Icon icon="material-symbols:delete" /></button>
 
-            <button onClick={() => submitEdits(todo.id)}><Icon icon="uil:edit"/></button>
+            <button onClick={() => {
+              const change = document.getElementById(index +'-input')
+              if(change.classList.contains('input-unseen')){
+                change.classList.remove('input-unseen')
+              } else {
+                change.classList.add('input-unseen')
+              }
+            }}><Icon icon="uil:edit"/></button>
 
             <button onClick={() => {
               const Work = document.getElementById(index +'-work');
+              const input = document.getElementById(index + '-input')
               if(Work.classList.contains('done')){
                 Work.classList.remove('done');
+                input.classList.remove('done');
                 Work.classList.add('notDone');
+                input.classList.add('notDone')
                 const doneText = document.getElementById(index + '-done')
-                console.log(doneText);
                 doneText.classList.add('unseen')
               }else{
                 Work.classList.add('done');
+                input.classList.add('done')
                 Work.classList.remove('notDone')
+                input.classList.remove('notDone')
                 const doneText = document.getElementById(index + '-done')
-                console.log(doneText);
                 doneText.classList.remove('unseen')
               }}}><Icon icon="ph:check-duotone"/></button>
             </li>
-            <input onChange={(e) => setEditingText(e.target.value) }/> <button onChange={submitEdits(todo.id)}></button>
+            <div id={index +'-input'} className="notDone flex input-unseen">
+            <input onChange={(e) => setEditingText(e.target.value) }/> <button id={index+'-changebtn'} className="btn" onClick={() => submitEdits(todo.id, index)}>Change</button>
+            </div>
             </div>
           ))}
         </ul>
