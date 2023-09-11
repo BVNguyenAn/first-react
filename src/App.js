@@ -12,8 +12,12 @@ const App = () => {
 
   React.useEffect(() => {
     const getTodo = JSON.parse(localStorage.getItem("todos"));
-    if(getTodo != null || getTodo != []){
-          setTodos(getTodo);
+    if(getTodo === null || getTodo === []){
+          console.log('error')
+          setTodos([]);
+    } else {
+      console.log('sucess')
+      setTodos(getTodo);
     }
     console.log(getTodo);
 
