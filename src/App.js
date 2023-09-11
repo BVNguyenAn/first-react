@@ -12,8 +12,11 @@ const App = () => {
 
   React.useEffect(() => {
     const getTodo = JSON.parse(localStorage.getItem("todos"));
+    if(getTodo !== null || getTodo!== ''){
+          setTodos(getTodo);
+    }
     console.log(getTodo);
-    setTodos(getTodo);
+
   }, []);
 
   function handleSubmit(e) {
