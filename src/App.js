@@ -11,17 +11,9 @@ const App = () => {
   const [editingText, setEditingText] = React.useState("");
 
   React.useEffect(() => {
-    const json = localStorage.getItem("todos");
-    const loadedTodos = JSON.parse(json);
-    console.log(loadedTodos)
-      setTodos(loadedTodos);
+    const getTodo = JSON.parse(localStorage.getItem("todos"));
+    setTodos(getTodo);
   }, []);
-
-  React.useEffect(() => {
-    const json = JSON.stringify(todos);
-    localStorage.setItem("todos", json);
-  }, [todos]);
-
 
   function handleSubmit(e) {
     if(todo !== ''){
@@ -35,12 +27,19 @@ const App = () => {
     };
 
     setTodos([...todos].concat(newTodo));    
+    localStorage.setItem("todos", JSON.stringify(todos));
     setTodo("");
   }}
 const [value, setValue] = React.useState(0);
 
 const handleChange = (event, newValue) => {
   setValue(newValue);
+};
+const handleDelete = (id) => {
+  const updatedTodos = todos.filter((todo) => todo.id !== id);
+  setTodos(updatedTodos);
+
+  localStorage.setItem("todos", JSON.stringify(todos));
 };
 function submitEdits(id, i) {
   const remove = document.getElementById(i + '-input')
@@ -52,6 +51,7 @@ function submitEdits(id, i) {
     return todo;
   });
   setTodos(updatedTodos);
+  localStorage.setItem("todos", JSON.stringify(todos));
   setEditingText('');
 }
   return (
@@ -100,17 +100,16 @@ function submitEdits(id, i) {
           {todos.map((todo, index) => (
             <div className="main" id={index} key={index}>
             <li className="work notDone" id= {index + "-work"}>{todo.text} <span className="unseen d-text" id = {index + '-done'}>[done]</span>
-            <button id = {index + '-delete'} onClick={() => {
-              const Work = document.getElementById(index);
-              Work.remove();
-            }}><Icon icon="material-symbols:delete" /></button>
+            <button id = {index + '-delete'} onClick={() => handleDelete(todo.id)}><Icon icon="material-symbols:delete" /></button>
 
             <button onClick={() => {
               const change = document.getElementById(index +'-input')
               if(change.classList.contains('input-unseen')){
                 change.classList.remove('input-unseen')
+                todo.isEditing = true
               } else {
                 change.classList.add('input-unseen')
+                todo.isEditing = false
               }
             }}><Icon icon="uil:edit"/></button>
 
