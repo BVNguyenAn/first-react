@@ -10,6 +10,19 @@ const App = () => {
   const [todo, setTodo] = React.useState("");
   const [editingText, setEditingText] = React.useState("");
 
+  React.useEffect(() => {
+    const json = localStorage.getItem("todos");
+    const loadedTodos = JSON.parse(json);
+    console.log(loadedTodos)
+      setTodos(loadedTodos);
+  }, []);
+
+  React.useEffect(() => {
+    const json = JSON.stringify(todos);
+    localStorage.setItem("todos", json);
+  }, [todos]);
+
+
   function handleSubmit(e) {
     if(todo !== ''){
     e.preventDefault();
@@ -20,7 +33,8 @@ const App = () => {
       completed: false,
       isEditing: false,
     };
-    setTodos([...todos].concat(newTodo));
+
+    setTodos([...todos].concat(newTodo));    
     setTodo("");
   }}
 const [value, setValue] = React.useState(0);
@@ -31,11 +45,9 @@ const handleChange = (event, newValue) => {
 function submitEdits(id, i) {
   const remove = document.getElementById(i + '-input')
   remove.classList.add('input-unseen')
-  console.log(remove)
   const updatedTodos = [...todos].map((todo) => {
     if (todo.id === id && editingText !== '') {
       todo.text = editingText;
-      console.log(id)
     }
     return todo;
   });
@@ -58,7 +70,6 @@ function submitEdits(id, i) {
         <Box sx={{ width: '100%', bgcolor: 'background.paper' }}>
       <Tabs value={value} onChange={handleChange} centered>
         <Tab label="All" onClick={() => {
-          console.log('open all tabs');
           const divs = document.querySelectorAll('.work-unseen');
           for (const div of divs) {
             div.classList.remove('work-unseen');
@@ -87,8 +98,8 @@ function submitEdits(id, i) {
       </Tabs>
     </Box>
           {todos.map((todo, index) => (
-            <div className="main" id={index}>
-            <li className="work notDone" id= {index + "-work"} key={index}>{todo.text} <span className="unseen d-text" id = {index + '-done'}>[done]</span>
+            <div className="main" id={index} key={index}>
+            <li className="work notDone" id= {index + "-work"}>{todo.text} <span className="unseen d-text" id = {index + '-done'}>[done]</span>
             <button id = {index + '-delete'} onClick={() => {
               const Work = document.getElementById(index);
               Work.remove();
