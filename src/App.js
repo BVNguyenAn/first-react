@@ -23,11 +23,12 @@ const App = () => {
       id: new Date().getTime(),
       text: todo,
       completed: false,
-      isEditing: false,
+      done: false,
     };
 
-    setTodos([...todos].concat(newTodo));    
-    localStorage.setItem("todos", JSON.stringify(todos));
+    setTodos([...todos].concat(newTodo));
+    const newestTodo = [...todos].concat(newTodo)
+    localStorage.setItem("todos", JSON.stringify(newestTodo));
     setTodo("");
   }}
 const [value, setValue] = React.useState(0);
@@ -36,7 +37,19 @@ const handleChange = (event, newValue) => {
   setValue(newValue);
 };
 const handleDelete = (id) => {
-  const updatedTodos = todos.filter((todo) => todo.id !== id);
+  let updatedTodos = [...todos].filter((todo) => todo.id !== id);
+  setTodos(updatedTodos);
+  console.log(todos);
+  localStorage.setItem("todos", JSON.stringify([...todos].filter((todo) => todo.id !== id)));
+};
+const doneWork = (id) => {
+  const updatedTodos = todos.map((todo) => {
+    if (todo.id === id) {
+      todo.done = !todo.done;
+      console.log(todo);
+    }
+    return todo;
+  });
   setTodos(updatedTodos);
 
   localStorage.setItem("todos", JSON.stringify(todos));
@@ -97,9 +110,11 @@ function submitEdits(id, i) {
         }}/>
       </Tabs>
     </Box>
-          {todos.map((todo, index) => (
+          {todos.map((todo, index) => { if(todo.done === false){
+            return(
+          (
             <div className="main" id={index} key={index}>
-            <li className="work notDone" id= {index + "-work"}>{todo.text} <span className="unseen d-text" id = {index + '-done'}>[done]</span>
+            <li className="work notDone" id= {index + "-work"}> <span className="notDone">{todo.text} </span><span className="unseen d-text" id = {index + '-done'}>[done]</span>
             <button id = {index + '-delete'} onClick={() => handleDelete(todo.id)}><Icon icon="material-symbols:delete" /></button>
 
             <button onClick={() => {
@@ -113,34 +128,45 @@ function submitEdits(id, i) {
               }
             }}><Icon icon="uil:edit"/></button>
 
-            <button onClick={() => {
-              const Work = document.getElementById(index +'-work');
-              const input = document.getElementById(index + '-input')
-              if(Work.classList.contains('done')){
-                Work.classList.remove('done');
-                input.classList.remove('done');
-                Work.classList.add('notDone');
-                input.classList.add('notDone')
-                const doneText = document.getElementById(index + '-done')
-                doneText.classList.add('unseen')
-              }else{
-                Work.classList.add('done');
-                input.classList.add('done')
-                Work.classList.remove('notDone')
-                input.classList.remove('notDone')
-                const doneText = document.getElementById(index + '-done')
-                doneText.classList.remove('unseen')
-              }}}><Icon icon="ph:check-duotone"/></button>
+            <button onClick={() => doneWork(todo.id) }><Icon icon="ph:check-duotone"/></button>
             </li>
             <div id={index +'-input'} className="notDone flex input-unseen">
             <input onChange={(e) => setEditingText(e.target.value) }/> <button id={index+'-changebtn'} className="btn" onClick={() => submitEdits(todo.id, index)}>Change</button>
             </div>
             </div>
-          ))}
+          ))}else if(todo.done === true){
+            return(
+              (
+                <div className="main" id={index} key={index}>
+                <li className="work done" id= {index + "-work"}> <span className="work-text">{todo.text} </span><span className="unseen d-text" id = {index + '-done'}>[done]</span>
+                <button id = {index + '-delete'} onClick={() => handleDelete(todo.id)}><Icon icon="material-symbols:delete" /></button>
+    
+                <button onClick={() => {
+                  const change = document.getElementById(index +'-input')
+                  if(change.classList.contains('input-unseen')){
+                    change.classList.remove('input-unseen')
+                    todo.isEditing = true
+                  } else {
+                    change.classList.add('input-unseen')
+                    todo.isEditing = false
+                  }
+                }}><Icon icon="uil:edit"/></button>
+    
+                <button onClick={() => doneWork(todo.id) }><Icon icon="ph:check-duotone"/></button>
+                </li>
+                <div id={index +'-input'} className="notDone flex input-unseen">
+                <input onChange={(e) => setEditingText(e.target.value) }/> <button id={index+'-changebtn'} className="btn" onClick={() => submitEdits(todo.id, index)}>Change</button>
+                </div>
+                </div>
+              )
+            )
+          }
+        }
+            )}
         </ul>
       </div>
     </div>
-  );
+          );
 }
 
 export default App;
