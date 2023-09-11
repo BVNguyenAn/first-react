@@ -12,6 +12,7 @@ const App = () => {
 
   React.useEffect(() => {
     const getTodo = JSON.parse(localStorage.getItem("todos"));
+    console.log(getTodo);
     setTodos(getTodo);
   }, []);
 
